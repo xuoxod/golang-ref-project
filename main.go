@@ -58,10 +58,10 @@ func ComparePassword(testPassword, hashedPassword string) bool {
 	err := bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
 
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		return false
 	} else if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		return false
 	}
 
