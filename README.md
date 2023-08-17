@@ -1,14 +1,10 @@
-## Crew App
+## Golang Reference Project
 
-A web app based from my **[introduction to Golang web development reference project](https://github.com/xuoxod/go-app-template)**
-
-#### GO web application with template system
+### As a newbie to Golang, this lab project is used for reference and working out some code
 
 - Dependencies
-  - github.com/alexedwards/scs/v2 v2.5.1
-  - github.com/go-chi/chi v1.5.4
   - github.com/joho/godotenv v1.5.1
-  - github.com/justinas/nosurf v1.1.1
+  - golang.org/x/crypto v0.12.0
 
 ```
 > Golang reference project
