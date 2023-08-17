@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/xuoxod/crew-app/internal/config"
+	"github.com/xuoxod/lab/internal/config"
 )
 
 var app *config.AppConfig

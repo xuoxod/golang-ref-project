@@ -3,11 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
+	"github.com/xuoxod/lab/internal/config"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Application configuration
+var app config.AppConfig
+
 func main() {
+	app.DBConnection = os.Getenv("DB_URL")
 	argument := flag.String("argument", "", "The first argument")
 	action := flag.String("action", "", "The action to perform with the first argument")
 

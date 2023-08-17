@@ -5,6 +5,9 @@
 - Dependencies
   - github.com/joho/godotenv v1.5.1
   - golang.org/x/crypto v0.12.0
+  - github.com/alexedwards/scs/v2 v2.5.1
+  - github.com/jackc/pgx/v5 v5.4.3
+  - golang.org/x/crypto v0.12.0
 
 ```
 > Golang reference project
