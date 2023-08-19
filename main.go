@@ -44,7 +44,11 @@ func main() {
 
 	default:
 		fmt.Printf("\nUnknown action argument: [%s]\n\tProgram Ended\n\n", *action)
+
+	case "stamp":
+		TimeStamp(*argument)
 	}
+
 }
 
 func HashPassword(password string) (string, error) {
@@ -72,4 +76,18 @@ func ComparePassword(testPassword, hashedPassword string) bool {
 	}
 
 	return true
+}
+
+func TimeStamp(strDate string) {
+	const layout = "2006-01-02"
+	// const layout = "Mon Jan _2 15:04:05 MST 2006"
+	// results, err := time.Parse(layout, strDate)
+	results, err := TimeStamp()
+
+	if err != nil {
+		fmt.Println("TimeStamp error:\t", err.Error())
+		return
+	}
+
+	fmt.Println("Formatted Date:\t", results)
 }
