@@ -9,6 +9,7 @@ import (
 	"github.com/xuoxod/lab/internal/config"
 	"github.com/xuoxod/lab/internal/driver"
 	"github.com/xuoxod/lab/internal/envloader"
+	"github.com/xuoxod/lab/internal/helpers"
 )
 
 // Application configuration
@@ -43,7 +44,21 @@ func main() {
 		fmt.Println(action)
 
 	case "genhash":
-		infoLog.Println("Generate hash string")
+		if flag.NArg() < 1 {
+			errorLog.Println("Missing argument")
+		} else if flag.NArg() > 1 {
+			errorLog.Println("Too many arguments")
+		} else {
+			infoLog.Println("Generate hash string")
+			arg := flag.Args()[0]
+			hashword, err := helpers.GenerateHash(arg)
+
+			if err != nil {
+				errorLog.Println(err.Error())
+			}
+
+			fmt.Println(hashword)
+		}
 
 	case "comhash":
 		infoLog.Println("Compare hash to string")
