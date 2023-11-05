@@ -17,7 +17,13 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	envloader.LoadEnvVars()
+	err := envloader.LoadEnvVars()
+
+	if err != nil {
+		infoLog.Println("Error loading environment variables")
+		errorLog.Println(err.Error())
+	}
+
 	var environment bool
 	flag.BoolVar(&environment, "env", false, "Set development environment")
 	flag.Parse()
