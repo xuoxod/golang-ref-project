@@ -10,7 +10,7 @@ import (
 	"github.com/xuoxod/lab/internal/driver"
 	"github.com/xuoxod/lab/internal/envloader"
 	"github.com/xuoxod/lab/internal/helpers"
-	"github.com/xuoxod/lab/internal/libs"
+	"github.com/xuoxod/lab/internal/utils"
 )
 
 // Application configuration
@@ -20,6 +20,30 @@ var errorLog *log.Logger
 
 func main() {
 	ConfigureApp()
+
+}
+
+func FlagExp() {
+	var test1, test2 string
+
+	flag.StringVar(&test1, "test1", "", "Testing flag arguments")
+	flag.StringVar(&test2, "test2", "", "Testing flag2 arguments")
+	flag.Parse()
+
+	if flag.Parsed() {
+		args := utils.ComArgs()
+		argsCount := utils.CountArgs()
+
+		switch argsCount {
+		case 1:
+			fmt.Println(args)
+
+		case 2:
+			fmt.Println(args)
+
+		default:
+		}
+	}
 }
 
 func RunProg() {
@@ -47,7 +71,7 @@ func RunProg() {
 				fmt.Println("Value: ", f.Value.String())
 				fmt.Println("Name: ", f.Name)
 				fmt.Println("Count: ", flag.NArg())
-				fmt.Println("Count Args: ", libs.CountArgs())
+				fmt.Println("Count Args: ", utils.CountArgs())
 			}
 
 			if value != "" && numArgs == 0 {
@@ -89,16 +113,18 @@ func RunProg() {
 }
 
 func TestDbConn() {
-	db, err := connectDatastore()
+	db, dsn, err := connectDatastore()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	app.DBConnection = dsn
+
 	defer db.SQL.Close()
 }
 
-func connectDatastore() (*driver.DB, error) {
+func connectDatastore() (*driver.DB, string, error) {
 	SetupLogs()
 
 	// Connect to database
@@ -119,9 +145,10 @@ func connectDatastore() (*driver.DB, error) {
 
 	if err != nil {
 		log.Fatal("Cannot connect to database! Dying ...")
+		return nil, "", err
 	}
 
-	return db, nil
+	return db, psqlInfo, nil
 }
 
 func SetupLogs() {
