@@ -5,6 +5,11 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	_ "github.com/jackc/pgconn"
+	_ "github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
+	_ "github.com/lib/pq"
 )
 
 type DB struct {
@@ -51,18 +56,19 @@ func testDb(d *sql.DB) error {
 }
 
 func NewDatabase(dsn string) (*sql.DB, error) {
+	log.Printf("\nConnection String: %s\n", dsn)
 	conn, err := sql.Open("postgres", dsn)
 
 	if err != nil {
-		fmt.Printf("\n\n\t\tNewDatabase method failed\n\t\tError Message:\t%s\n\n", err.Error())
+		return nil, err
+	}
+
+	if err = conn.Ping(); err != nil {
+		log.Printf("\nPing error: %s\n", err.Error())
 		return nil, err
 	}
 
 	log.Println("Connected to datastore: ")
-
-	// if err = conn.Ping(); err != nil {
-	// 	return nil, err
-	// }
 
 	return conn, nil
 }
