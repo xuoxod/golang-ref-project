@@ -71,9 +71,10 @@ func main() {
 
 	case "dtstamp":
 		infoLog.Println("Print date/time stamp")
-	}
 
-	// TestDbConn()
+	default:
+		log.Flags()
+	}
 
 }
 
