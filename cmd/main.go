@@ -18,18 +18,51 @@ var errorLog *log.Logger
 
 func main() {
 	err := envloader.LoadEnvVars()
+	SetupLogs()
 
 	if err != nil {
 		infoLog.Println("Error loading environment variables")
 		errorLog.Println(err.Error())
 	}
 
-	var environment bool
-	flag.BoolVar(&environment, "env", false, "Set development environment")
+	var action string
+
+	flag.StringVar(&action, "act", "", "Sets the command to execute")
 	flag.Parse()
 
-	app.InProduction = environment
+	switch action {
+	case "testdbc":
+		infoLog.Println("Test postgres connection")
+		TestDbConn()
 
+	case "environment":
+		infoLog.Println("Set development environment")
+
+	case "querydb":
+		infoLog.Println("Query postgres datastore")
+		fmt.Println(action)
+
+	case "genhash":
+		infoLog.Println("Generate hash string")
+
+	case "comhash":
+		infoLog.Println("Compare hash to string")
+
+	case "datesta":
+		infoLog.Println("Print date stamp")
+
+	case "timesta":
+		infoLog.Println("Print time stamp")
+
+	case "dtstamp":
+		infoLog.Println("Print date/time stamp")
+	}
+
+	// TestDbConn()
+
+}
+
+func TestDbConn() {
 	db, err := run()
 
 	if err != nil {
@@ -37,15 +70,10 @@ func main() {
 	}
 
 	defer db.SQL.Close()
-
 }
 
 func run() (*driver.DB, error) {
-	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-	app.InfoLog = infoLog
-
-	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
-	app.ErrorLog = errorLog
+	SetupLogs()
 
 	// Connect to database
 	log.Println("Connecting to database ...")
@@ -68,4 +96,12 @@ func run() (*driver.DB, error) {
 	}
 
 	return db, nil
+}
+
+func SetupLogs() {
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
 }
