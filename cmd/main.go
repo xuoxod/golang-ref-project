@@ -10,6 +10,7 @@ import (
 	"github.com/xuoxod/lab/internal/driver"
 	"github.com/xuoxod/lab/internal/envloader"
 	"github.com/xuoxod/lab/internal/helpers"
+	"github.com/xuoxod/lab/internal/libs"
 )
 
 // Application configuration
@@ -18,68 +19,77 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 
 func main() {
-	err := envloader.LoadEnvVars()
-	SetupLogs()
+	ConfigureApp()
+}
 
-	if err != nil {
-		infoLog.Println("Error loading environment variables")
-		errorLog.Println(err.Error())
-	}
+func RunProg() {
+	var genhash, comhash, envir, querydb, testdbc, datesta, timesta, dtstamp string
 
-	var action string
-
-	flag.StringVar(&action, "act", "", "Sets the command to execute")
+	flag.StringVar(&genhash, "genhash", "", "Generates a hash from given string")
+	flag.StringVar(&comhash, "comhash", "", "Compare hash to string")
+	flag.StringVar(&envir, "envir", "", "Set development environment")
+	flag.StringVar(&querydb, "querydb", "", "Query datastore")
+	flag.StringVar(&testdbc, "testdbc", "", "Test database connection")
+	flag.StringVar(&datesta, "datesta", "", "Print date stamp")
+	flag.StringVar(&timesta, "timesta", "", "Print time stamp")
+	flag.StringVar(&dtstamp, "dtstamp", "", "Print date/time stamp")
 	flag.Parse()
 
-	switch action {
-	case "testdbc":
-		infoLog.Println("Test postgres connection")
-		TestDbConn()
+	flag.Visit(func(f *flag.Flag) {
+		name := f.Name
+		value := f.Value.String()
+		numArgs := flag.NArg()
 
-	case "environment":
-		infoLog.Println("Set development environment")
+		switch name {
+		case "genhash":
 
-	case "querydb":
-		infoLog.Println("Query postgres datastore")
-		fmt.Println(action)
-
-	case "genhash":
-		if flag.NArg() < 1 {
-			errorLog.Println("Missing argument")
-		} else if flag.NArg() > 1 {
-			errorLog.Println("Too many arguments")
-		} else {
-			infoLog.Println("Generate hash string")
-			arg := flag.Args()[0]
-			hashword, err := helpers.GenerateHash(arg)
-
-			if err != nil {
-				errorLog.Println(err.Error())
+			if flag.Parsed() {
+				fmt.Println("Value: ", f.Value.String())
+				fmt.Println("Name: ", f.Name)
+				fmt.Println("Count: ", flag.NArg())
+				fmt.Println("Count Args: ", libs.CountArgs())
 			}
 
-			fmt.Println(hashword)
+			if value != "" && numArgs == 0 {
+				infoLog.Println("Generate hash string")
+				value := fmt.Sprintf("%v", value)
+				hash, err := helpers.GenerateHash(value)
+
+				if err != nil {
+					errorLog.Println(err.Error())
+				}
+
+				fmt.Println("Original: ", value)
+				fmt.Println(hash)
+			} else if value != "" && numArgs > 0 {
+				errorLog.Println("Too many arguments")
+			} else {
+				errorLog.Println("Missing argument")
+			}
+		case "comhash":
+			fmt.Println("Value: ", f.Value.String())
+			fmt.Println("Name: ", f.Name)
+			fmt.Println("Count: ", flag.NArg())
+
+			infoLog.Println("Compare hash to string")
+		case "envir":
+			infoLog.Println("Set development environment")
+		case "querydb":
+			infoLog.Println("Query datastore")
+		case "testdbc":
+			infoLog.Println("Test database connection")
+		case "datesta":
+			infoLog.Println("Print date stamp")
+		case "timesta":
+			infoLog.Println("Print time stamp")
+		case "dtstamp":
+			infoLog.Println("Print date/time stamp")
 		}
-
-	case "comhash":
-		infoLog.Println("Compare hash to string")
-
-	case "datesta":
-		infoLog.Println("Print date stamp")
-
-	case "timesta":
-		infoLog.Println("Print time stamp")
-
-	case "dtstamp":
-		infoLog.Println("Print date/time stamp")
-
-	default:
-		log.Flags()
-	}
-
+	})
 }
 
 func TestDbConn() {
-	db, err := run()
+	db, err := connectDatastore()
 
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +98,7 @@ func TestDbConn() {
 	defer db.SQL.Close()
 }
 
-func run() (*driver.DB, error) {
+func connectDatastore() (*driver.DB, error) {
 	SetupLogs()
 
 	// Connect to database
@@ -120,4 +130,15 @@ func SetupLogs() {
 
 	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	app.ErrorLog = errorLog
+}
+
+func ConfigureApp() {
+	err := envloader.LoadEnvVars()
+
+	if err != nil {
+		infoLog.Println("Error loading environment variables")
+		errorLog.Println(err.Error())
+	}
+
+	SetupLogs()
 }

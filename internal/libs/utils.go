@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+type function func()
+
 func StringNoSpaces(arg string) bool {
 	return !strings.Contains(arg, " ")
 }
@@ -70,4 +72,38 @@ func TimeStamp(strDate string) {
 	}
 
 	fmt.Println("Formatted Date:\t", results)
+}
+
+func ExitProg(exitCode int) {
+	os.Exit(exitCode)
+}
+
+func ComAllArgs() []string {
+	return os.Args
+}
+
+func CountAllArgs() int {
+	return len(ComAllArgs())
+}
+
+func ComArgs() []string {
+	args := []string{}
+
+	for i, a := range os.Args {
+		if i != 0 {
+			args = append(args, a)
+		}
+	}
+	return args
+}
+
+func CountArgs() int {
+	return len(ComArgs())
+}
+
+func ExecuteAfterTime(seconds int, f function) {
+	duration := time.Duration(seconds) * time.Second
+	timer := time.NewTimer(duration)
+	<-timer.C
+	f()
 }
