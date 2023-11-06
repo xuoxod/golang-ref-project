@@ -20,7 +20,7 @@ var errorLog *log.Logger
 
 func main() {
 	ConfigureApp()
-
+	RunProg()
 }
 
 func FlagExp() {
@@ -47,55 +47,58 @@ func FlagExp() {
 }
 
 func RunProg() {
-	var genhash, comhash, envir, querydb, testdbc, datesta, timesta, dtstamp string
+	var genhash, comhash, envir, querydb, testdbc string
 
 	flag.StringVar(&genhash, "genhash", "", "Generates a hash from given string")
-	flag.StringVar(&comhash, "comhash", "", "Compare hash to string")
+	flag.StringVar(&comhash, "comhash", "", "Compare plain text to hashed text. Must embed the hashed text within single quotes.")
 	flag.StringVar(&envir, "envir", "", "Set development environment")
 	flag.StringVar(&querydb, "querydb", "", "Query datastore")
 	flag.StringVar(&testdbc, "testdbc", "", "Test database connection")
-	flag.StringVar(&datesta, "datesta", "", "Print date stamp")
-	flag.StringVar(&timesta, "timesta", "", "Print time stamp")
-	flag.StringVar(&dtstamp, "dtstamp", "", "Print date/time stamp")
+	flag.Bool("datesta", true, "Print date stamp")
+	flag.Bool("timesta", true, "Print time stamp")
+	flag.Bool("dtstamp", true, "Print date/time stamp")
 	flag.Parse()
 
 	flag.Visit(func(f *flag.Flag) {
-		name := f.Name
-		value := f.Value.String()
-		numArgs := flag.NArg()
+		command := f.Name
+		arguments := utils.ComArgs()
+		numArgs := len(arguments)
 
-		switch name {
+		switch command {
 		case "genhash":
-
-			if flag.Parsed() {
-				fmt.Println("Value: ", f.Value.String())
-				fmt.Println("Name: ", f.Name)
-				fmt.Println("Count: ", flag.NArg())
-				fmt.Println("Count Args: ", utils.CountArgs())
-			}
-
-			if value != "" && numArgs == 0 {
+			if arguments[1] != "" && numArgs == 2 {
 				infoLog.Println("Generate hash string")
-				value := fmt.Sprintf("%v", value)
-				hash, err := helpers.GenerateHash(value)
+
+				if flag.Parsed() {
+					fmt.Println("Command: ", command)
+					fmt.Println("Argument: ", arguments[1])
+					fmt.Println("Cmd line args: ", utils.CountArgs())
+				}
+
+				hash, err := helpers.GenerateHash(arguments[1])
 
 				if err != nil {
 					errorLog.Println(err.Error())
 				}
 
-				fmt.Println("Original: ", value)
-				fmt.Println(hash)
-			} else if value != "" && numArgs > 0 {
-				errorLog.Println("Too many arguments")
-			} else {
-				errorLog.Println("Missing argument")
+				fmt.Println("Original: ", arguments[1])
+				fmt.Println("Hashed:   ", hash)
 			}
-		case "comhash":
-			fmt.Println("Value: ", f.Value.String())
-			fmt.Println("Name: ", f.Name)
-			fmt.Println("Count: ", flag.NArg())
 
-			infoLog.Println("Compare hash to string")
+		case "comhash":
+			if arguments[1] != "" && arguments[2] != "" && numArgs == 3 {
+				infoLog.Println("Compare hash to string")
+				arg1 := arguments[1]
+				arg2 := arguments[2]
+
+				fmt.Println("Argument 1: ", arg1)
+				fmt.Println("Argument 2: ", arg2)
+
+				results := helpers.ComparePassword(arguments[2], arguments[1])
+
+				fmt.Printf("%s === %s? %t\n", arguments[1], arguments[2], results)
+			}
+
 		case "envir":
 			infoLog.Println("Set development environment")
 		case "querydb":
@@ -103,11 +106,17 @@ func RunProg() {
 		case "testdbc":
 			infoLog.Println("Test database connection")
 		case "datesta":
-			infoLog.Println("Print date stamp")
+			if numArgs == 1 {
+				infoLog.Println("Print date stamp")
+				fmt.Println("Date stamp ", utils.DateStamp())
+			}
 		case "timesta":
 			infoLog.Println("Print time stamp")
+			fmt.Println("Time stamp: ", utils.TimeStamp())
+
 		case "dtstamp":
 			infoLog.Println("Print date/time stamp")
+			fmt.Println("Date time stamp: ", utils.DateTimeStamp())
 		}
 	})
 }

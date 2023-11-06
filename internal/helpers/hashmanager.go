@@ -16,14 +16,14 @@ func GenerateHash(characters string) (string, error) {
 	return string(hashword), nil
 }
 
-func ComparePassword(testPassword, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(testPassword))
+func ComparePassword(hashedText, plainText string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedText), []byte(plainText))
 
 	if err == bcrypt.ErrMismatchedHashAndPassword {
-		fmt.Println(err)
+		fmt.Println("bcrypt mismatched error: ", err)
 		return false
 	} else if err != nil {
-		fmt.Println(err)
+		fmt.Println("bcrypt error: ", err)
 		return false
 	}
 
