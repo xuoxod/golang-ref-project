@@ -84,7 +84,6 @@ func RunProg() {
 				fmt.Println("Original: ", arguments[1])
 				fmt.Println("Hashed:   ", hash)
 			}
-
 		case "comhash":
 			if arguments[1] != "" && arguments[2] != "" && numArgs == 3 {
 				infoLog.Println("Compare hash to string")
@@ -98,7 +97,6 @@ func RunProg() {
 
 				fmt.Printf("%s === %s? %t\n", arguments[1], arguments[2], results)
 			}
-
 		case "envir":
 			infoLog.Println("Set development environment")
 		case "querydb":
