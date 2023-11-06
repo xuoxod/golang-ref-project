@@ -113,7 +113,6 @@ func RunProg() {
 		case "timesta":
 			infoLog.Println("Print time stamp")
 			fmt.Println(utils.TimeStamp())
-
 		case "dtstamp":
 			infoLog.Println("Print date/time stamp")
 			fmt.Println(utils.DateTimeStamp())
