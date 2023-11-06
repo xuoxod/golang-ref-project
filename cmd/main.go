@@ -108,15 +108,15 @@ func RunProg() {
 		case "datesta":
 			if numArgs == 1 {
 				infoLog.Println("Print date stamp")
-				fmt.Println("Date stamp ", utils.DateStamp())
+				fmt.Println(utils.DateStamp())
 			}
 		case "timesta":
 			infoLog.Println("Print time stamp")
-			fmt.Println("Time stamp: ", utils.TimeStamp())
+			fmt.Println(utils.TimeStamp())
 
 		case "dtstamp":
 			infoLog.Println("Print date/time stamp")
-			fmt.Println("Date time stamp: ", utils.DateTimeStamp())
+			fmt.Println(utils.DateTimeStamp())
 		}
 	})
 }

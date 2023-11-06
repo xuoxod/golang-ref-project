@@ -45,16 +45,41 @@ func DateTimeStamp() string {
 
 	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
 	year, month, day := d.Date()
-	hour, minute, second := d.Clock()
+	hour, minute, second := time.Now().Local().Clock()
 
-	return fmt.Sprintf("%v/%v/%v %v:%v:%v", month, day, year, hour, minute, second)
+	var suffix string
+	var strDay string = fmt.Sprintf("%d", day)
+
+	if strings.HasSuffix(strDay, "1") {
+		suffix = "st"
+	} else if strings.HasSuffix(strDay, "2") {
+		suffix = "nd"
+	} else if strings.HasSuffix(strDay, "3") {
+		suffix = "rd"
+	} else {
+		suffix = "th"
+	}
+
+	return fmt.Sprintf("%v %v%s %v %v:%v:%v", month, day, suffix, year, hour, minute, second)
 }
 
 func DateStamp() string {
 	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
 	year, month, day := d.Date()
+	var suffix string
+	var strDay string = fmt.Sprintf("%d", day)
 
-	return fmt.Sprintf("%v/%v/%v", month, day, year)
+	if strings.HasSuffix(strDay, "1") {
+		suffix = "st"
+	} else if strings.HasSuffix(strDay, "2") {
+		suffix = "nd"
+	} else if strings.HasSuffix(strDay, "3") {
+		suffix = "rd"
+	} else {
+		suffix = "th"
+	}
+
+	return fmt.Sprintf("%v %v%s %v", month, day, suffix, year)
 }
 
 func TimeStamp() string {
