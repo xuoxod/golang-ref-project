@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"strings"
@@ -119,4 +120,8 @@ func ExecuteAfterTime(seconds int, f function) {
 	timer := time.NewTimer(duration)
 	<-timer.C
 	f()
+}
+
+func GenerateRandomNumber(min, max int) (int, error) {
+	return min + rand.Intn(max-min), nil
 }

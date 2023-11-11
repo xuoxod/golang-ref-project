@@ -1,11 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 
+	"github.com/twilio/twilio-go"
+	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
+	verify "github.com/twilio/twilio-go/rest/verify/v2"
 	"github.com/xuoxod/lab/internal/config"
 	"github.com/xuoxod/lab/internal/driver"
 	"github.com/xuoxod/lab/internal/envloader"
@@ -20,7 +25,71 @@ var errorLog *log.Logger
 
 func main() {
 	ConfigureApp()
-	RunProg()
+
+	num := GenerateRandomNumber()
+
+	fmt.Println("Random 6 Digit Number: ", num)
+}
+
+func SendSMSVerif() {
+	client := twilio.NewRestClientWithParams(twilio.ClientParams{
+		Username: os.Getenv("TWILIO_ACCOUNT_SID"),
+		Password: os.Getenv("TWILIO_AUTH_TOKEN"),
+	})
+
+	params := &verify.CreateVerificationParams{}
+	params.SetTo("+12156674172")
+	params.SetChannel("sms")
+
+	resp, err := client.VerifyV2.CreateVerification(os.Getenv("TWILIO_SERVICES_ID"), params)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		if resp.Status != nil {
+			fmt.Println(*resp.Status)
+		} else {
+			fmt.Println(resp.Status)
+		}
+	}
+}
+
+func TestTwi() {
+	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
+	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
+	twilioPhone := os.Getenv("TWILIO_PHONE_NUMBER")
+
+	client := twilio.NewRestClientWithParams(twilio.ClientParams{
+		Username: accountSid,
+		Password: authToken,
+	})
+
+	params := &twilioApi.CreateMessageParams{}
+	params.SetTo("+12156674172")
+	params.SetFrom(twilioPhone)
+	params.SetBody("Hello from Go!")
+
+	resp, err := client.Api.CreateMessage(params)
+	if err != nil {
+		fmt.Println("Error sending SMS message: " + err.Error())
+	} else {
+		response, _ := json.Marshal(*resp)
+		fmt.Println("Response: " + string(response))
+	}
+}
+
+func GetVeriAttempts() {
+	client := twilio.NewRestClient()
+
+	resp, err := client.VerifyV2.FetchVerificationAttempt("VLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		if resp.Sid != nil {
+			fmt.Println(*resp.Sid)
+		} else {
+			fmt.Println(resp.Sid)
+		}
+	}
 }
 
 func FlagExp() {
@@ -174,4 +243,10 @@ func ConfigureApp() {
 	}
 
 	SetupLogs()
+}
+
+func GenerateRandomNumber() int {
+	min := 111111
+	max := 999999
+	return min + rand.Intn(max-min)
 }
