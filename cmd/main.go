@@ -55,7 +55,7 @@ func Send(num int) {
 			if j%2 == 0 {
 				words = append(words, utils.GenerateWord(i-j))
 			} else {
-				words = append(words, utils.GenerateWord(j/(2-i)))
+				words = append(words, utils.GenerateWord(j/(2+i)))
 			}
 		}
 
