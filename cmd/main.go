@@ -1,20 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
+	"time"
 
-	"github.com/twilio/twilio-go"
-	twilioApi "github.com/twilio/twilio-go/rest/api/v2010"
-	verify "github.com/twilio/twilio-go/rest/verify/v2"
 	"github.com/xuoxod/lab/internal/config"
-	"github.com/xuoxod/lab/internal/driver"
 	"github.com/xuoxod/lab/internal/envloader"
-	"github.com/xuoxod/lab/internal/helpers"
 	"github.com/xuoxod/lab/internal/utils"
 )
 
@@ -23,207 +16,59 @@ var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
 
+var MsgChan = make(chan Message)
+
+type Message struct {
+	Name    string
+	UUID    string
+	Message []string
+}
+
 func main() {
 	ConfigureApp()
-
-	num := GenerateRandomNumber()
-
-	fmt.Println("Random 6 Digit Number: ", num)
 }
 
-func SendSMSVerif() {
-	client := twilio.NewRestClientWithParams(twilio.ClientParams{
-		Username: os.Getenv("TWILIO_ACCOUNT_SID"),
-		Password: os.Getenv("TWILIO_AUTH_TOKEN"),
-	})
+func ChannelTest() {
+	num, err := utils.GenerateUserDefinedRandomNumber(14, 66)
 
-	params := &verify.CreateVerificationParams{}
-	params.SetTo("+12156674172")
-	params.SetChannel("sms")
-
-	resp, err := client.VerifyV2.CreateVerification(os.Getenv("TWILIO_SERVICES_ID"), params)
 	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		if resp.Status != nil {
-			fmt.Println(*resp.Status)
-		} else {
-			fmt.Println(resp.Status)
-		}
+		errorLog.Println(err.Error())
 	}
+
+	go Send(num)
+	go utils.ExecuteAfterTime(2, func() { Receive() })
+	fmt.Scanln()
+	close(MsgChan)
 }
 
-func TestTwi() {
-	accountSid := os.Getenv("TWILIO_ACCOUNT_SID")
-	authToken := os.Getenv("TWILIO_AUTH_TOKEN")
-	twilioPhone := os.Getenv("TWILIO_PHONE_NUMBER")
+func Send(num int) {
+	fmt.Printf("Random Number:\t%d\n\n", num)
 
-	client := twilio.NewRestClientWithParams(twilio.ClientParams{
-		Username: accountSid,
-		Password: authToken,
-	})
+	for i := 1; i < num; i++ {
+		var message Message
+		message.Name = utils.GenerateName(16)
+		message.UUID = utils.GenerateUID()
+		words := []string{}
 
-	params := &twilioApi.CreateMessageParams{}
-	params.SetTo("+12156674172")
-	params.SetFrom(twilioPhone)
-	params.SetBody("Hello from Go!")
-
-	resp, err := client.Api.CreateMessage(params)
-	if err != nil {
-		fmt.Println("Error sending SMS message: " + err.Error())
-	} else {
-		response, _ := json.Marshal(*resp)
-		fmt.Println("Response: " + string(response))
-	}
-}
-
-func GetVeriAttempts() {
-	client := twilio.NewRestClient()
-
-	resp, err := client.VerifyV2.FetchVerificationAttempt("VLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		if resp.Sid != nil {
-			fmt.Println(*resp.Sid)
-		} else {
-			fmt.Println(resp.Sid)
-		}
-	}
-}
-
-func FlagExp() {
-	var test1, test2 string
-
-	flag.StringVar(&test1, "test1", "", "Testing flag arguments")
-	flag.StringVar(&test2, "test2", "", "Testing flag2 arguments")
-	flag.Parse()
-
-	if flag.Parsed() {
-		args := utils.ComArgs()
-		argsCount := utils.CountArgs()
-
-		switch argsCount {
-		case 1:
-			fmt.Println(args)
-
-		case 2:
-			fmt.Println(args)
-
-		default:
-		}
-	}
-}
-
-func RunProg() {
-	var genhash, comhash, envir, querydb, testdbc string
-
-	flag.StringVar(&genhash, "genhash", "", "Generates a hash from given string")
-	flag.StringVar(&comhash, "comhash", "", "Compare plain text to hashed text. Must embed the hashed text within single quotes.")
-	flag.StringVar(&envir, "envir", "", "Set development environment")
-	flag.StringVar(&querydb, "querydb", "", "Query datastore")
-	flag.StringVar(&testdbc, "testdbc", "", "Test database connection")
-	flag.Bool("datesta", true, "Print date stamp")
-	flag.Bool("timesta", true, "Print time stamp")
-	flag.Bool("dtstamp", true, "Print date/time stamp")
-	flag.Parse()
-
-	flag.Visit(func(f *flag.Flag) {
-		command := f.Name
-		arguments := utils.ComArgs()
-		numArgs := len(arguments)
-
-		switch command {
-		case "genhash":
-			if arguments[1] != "" && numArgs == 2 {
-				infoLog.Println("Generate hash string")
-
-				if flag.Parsed() {
-					fmt.Println("Command: ", command)
-					fmt.Println("Argument: ", arguments[1])
-					fmt.Println("Cmd line args: ", utils.CountArgs())
-				}
-
-				hash, err := helpers.GenerateHash(arguments[1])
-
-				if err != nil {
-					errorLog.Println(err.Error())
-				}
-
-				fmt.Println("Original: ", arguments[1])
-				fmt.Println("Hashed:   ", hash)
+		for j := 1; j <= 11; j++ {
+			if j%2 == 0 {
+				words = append(words, utils.GenerateWord(i-j))
+			} else {
+				words = append(words, utils.GenerateWord(j/2-i))
 			}
-		case "comhash":
-			if arguments[1] != "" && arguments[2] != "" && numArgs == 3 {
-				infoLog.Println("Compare hash to string")
-				arg1 := arguments[1]
-				arg2 := arguments[2]
-
-				fmt.Println("Argument 1: ", arg1)
-				fmt.Println("Argument 2: ", arg2)
-
-				results := helpers.ComparePassword(arguments[2], arguments[1])
-
-				fmt.Printf("%s === %s? %t\n", arguments[1], arguments[2], results)
-			}
-		case "envir":
-			infoLog.Println("Set development environment")
-		case "querydb":
-			infoLog.Println("Query datastore")
-		case "testdbc":
-			infoLog.Println("Test database connection")
-		case "datesta":
-			if numArgs == 1 {
-				infoLog.Println("Print date stamp")
-				fmt.Println(utils.DateStamp())
-			}
-		case "timesta":
-			infoLog.Println("Print time stamp")
-			fmt.Println(utils.TimeStamp())
-		case "dtstamp":
-			infoLog.Println("Print date/time stamp")
-			fmt.Println(utils.DateTimeStamp())
 		}
-	})
+
+		message.Message = words
+		MsgChan <- message
+		time.Sleep(time.Microsecond * 138789)
+	}
 }
 
-func TestDbConn() {
-	db, dsn, err := connectDatastore()
-
-	if err != nil {
-		log.Fatal(err)
+func Receive() {
+	for {
+		message := <-MsgChan
+		fmt.Printf("%v\n\n", message)
 	}
-
-	app.DBConnection = dsn
-
-	defer db.SQL.Close()
-}
-
-func connectDatastore() (*driver.DB, string, error) {
-	SetupLogs()
-
-	// Connect to database
-	log.Println("Connecting to database ...")
-
-	var host string = os.Getenv("DB_HOST")
-	var user string = os.Getenv("DB_USER")
-	var password string = os.Getenv("DB_PASSWD")
-	var dbname string = os.Getenv("DB_NAME")
-	var port int = 5432
-	var sslmode string = os.Getenv("SSL_MODE")
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=%s",
-		host, port, user, password, dbname, sslmode)
-
-	db, err := driver.ConnectSql(psqlInfo)
-
-	if err != nil {
-		log.Fatal("Cannot connect to database! Dying ...")
-		return nil, "", err
-	}
-
-	return db, psqlInfo, nil
 }
 
 func SetupLogs() {
@@ -243,10 +88,4 @@ func ConfigureApp() {
 	}
 
 	SetupLogs()
-}
-
-func GenerateRandomNumber() int {
-	min := 111111
-	max := 999999
-	return min + rand.Intn(max-min)
 }

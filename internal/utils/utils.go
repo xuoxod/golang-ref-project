@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type function func()
@@ -42,6 +44,28 @@ func ClearScreen() {
 
 func DateTimeStamp() string {
 	// dts := fmt.Sprint("Date: ", time.Now())
+
+	// d := time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC)
+
+	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
+	year, month, day := d.Date()
+
+	return fmt.Sprintf("%v %v, %v", month, day, year)
+}
+
+func DateStamp() string {
+	// dts := fmt.Sprint("Date: ", time.Now())
+
+	// d := time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC)
+
+	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
+	year, month, day := d.Date()
+
+	return fmt.Sprintf("%v %v %v", month, day, year)
+}
+
+func DTS() string {
+	// dts := fmt.Sprint("Date: ", time.Now())
 	// d := time.Date(2000, 2, 1, 12, 30, 0, 0, time.UTC)
 
 	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
@@ -64,7 +88,7 @@ func DateTimeStamp() string {
 	return fmt.Sprintf("%v %v%s %v %v:%v:%v", month, day, suffix, year, hour, minute, second)
 }
 
-func DateStamp() string {
+func DS() string {
 	d := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day(), 12, 30, 0, 0, time.UTC)
 	year, month, day := d.Date()
 	var suffix string
@@ -83,9 +107,80 @@ func DateStamp() string {
 	return fmt.Sprintf("%v %v%s %v", month, day, suffix, year)
 }
 
-func TimeStamp() string {
+func TS() string {
 	hour, minute, second := time.Now().Local().Clock()
 	return fmt.Sprintf("%v:%v:%v", hour, minute, second)
+}
+
+func Print(msg string) {
+	fmt.Println(msg)
+}
+
+func GenerateMinMaxRandomNumber() (int, error) {
+	min := 111111
+	max := 999999
+	return min + rand.Intn(max-min), nil
+}
+
+func GenerateUserDefinedRandomNumber(min, max int) (int, error) {
+	return min + rand.Intn(max-min), nil
+}
+
+func GenerateRandomNumber() (int, error) {
+	min := 1
+	max := 999999
+	return min + rand.Intn(max-min), nil
+}
+
+func GenerateID() string {
+	id, err := gonanoid.New()
+
+	if err != nil {
+		log.Println(err.Error())
+		return "0"
+	}
+	return id
+}
+
+func GenerateName(size int) string {
+	if size < 1 {
+		size = 13
+	}
+
+	name, err := gonanoid.Generate("abcdefghijklmopqrstuvwxyzACDEFGHIJKLMOPQRSTUVWXYZ", size)
+
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
+	return name
+}
+
+func GenerateUID() string {
+	name, err := gonanoid.Generate("0123456789", 14)
+
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
+	return name
+}
+
+func GenerateWord(size int) string {
+	if size < 1 {
+		size = 13
+	}
+
+	name, err := gonanoid.Generate("aeiouylmqrsvAEIOUYBCDNP", size)
+
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
+	return name
 }
 
 func ExitProg(exitCode int) {
@@ -120,8 +215,4 @@ func ExecuteAfterTime(seconds int, f function) {
 	timer := time.NewTimer(duration)
 	<-timer.C
 	f()
-}
-
-func GenerateRandomNumber(min, max int) (int, error) {
-	return min + rand.Intn(max-min), nil
 }
