@@ -41,10 +41,6 @@ func ChannelTest() {
 	go Send(num)
 	go utils.ExecuteAfterTime(2, func() { Receive() })
 	fmt.Scanln()
-
-	defer func() {
-		close(MsgChan)
-	}()
 }
 
 func Send(num int) {
@@ -77,7 +73,10 @@ func Send(num int) {
 		MsgChan <- message
 		time.Sleep(time.Microsecond * 138789)
 	}
-	close(MsgChan)
+
+	defer func() {
+		close(MsgChan)
+	}()
 }
 
 func Receive() {
