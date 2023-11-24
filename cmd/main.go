@@ -27,7 +27,6 @@ type Message struct {
 
 func main() {
 	ConfigureApp()
-
 	ChannelTest()
 }
 
@@ -65,7 +64,7 @@ func Send(num int) {
 				words = append(words, utils.GenerateWord(7))
 			} else {
 				message.User.ContactDetails.Email = fmt.Sprintf("%s@oculus.org", utils.GenerateName(4))
-				words = append(words, utils.GenerateWord(12-j))
+				words = append(words, utils.GenerateWord(12-i))
 			}
 		}
 
