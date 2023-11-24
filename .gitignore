@@ -4,4 +4,4 @@
 go*
 scratch*
 node_modules
-lab
+./lab
