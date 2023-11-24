@@ -41,7 +41,10 @@ func ChannelTest() {
 	go Send(num)
 	go utils.ExecuteAfterTime(2, func() { Receive() })
 	fmt.Scanln()
-	close(MsgChan)
+
+	defer func() {
+		close(MsgChan)
+	}()
 }
 
 func Send(num int) {
