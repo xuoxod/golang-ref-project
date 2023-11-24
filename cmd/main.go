@@ -55,14 +55,14 @@ func Send(num int) {
 		words := []string{}
 
 		for j := 1; j <= 11; j++ {
-			if j%2 == 0 {
+			if i%2 == 0 {
 				message.User.ContactDetails.Email = fmt.Sprintf("%s@email.net", utils.GenerateName(7))
 				words = append(words, utils.GenerateWord(10-i))
-			} else if j%2 == 1 {
+			} else if i%2 == 1 {
 				message.User.ContactDetails.Email = fmt.Sprintf("%s@tagent.mil", utils.GenerateName(11))
 				words = append(words, utils.GenerateWord(5))
-			} else if j%2 == 2 {
-				message.User.ContactDetails.Email = fmt.Sprintf("%s@tagent.mil", utils.GenerateName(5))
+			} else if i%2 == 2 {
+				message.User.ContactDetails.Email = fmt.Sprintf("%s@evil.com", utils.GenerateName(5))
 				words = append(words, utils.GenerateWord(7))
 			} else {
 				message.User.ContactDetails.Email = fmt.Sprintf("%s@oculus.org", utils.GenerateName(4))
