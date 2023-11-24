@@ -158,14 +158,13 @@ func GenerateName(size int) string {
 }
 
 func GenerateUID() string {
-	name, err := gonanoid.Generate("0123456789", 14)
+	uid, err := gonanoid.Generate("0123456789", 14)
 
 	if err != nil {
 		log.Println(err.Error())
 		return ""
 	}
-
-	return name
+	return uid
 }
 
 func GenerateWord(size int) string {

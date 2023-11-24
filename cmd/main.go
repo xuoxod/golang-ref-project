@@ -1,11 +1,13 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/xuoxod/lab/internal/collections"
 	"github.com/xuoxod/lab/internal/config"
 	"github.com/xuoxod/lab/internal/envloader"
 	"github.com/xuoxod/lab/internal/utils"
@@ -19,18 +21,18 @@ var errorLog *log.Logger
 var MsgChan = make(chan Message)
 
 type Message struct {
-	Name    string
-	UUID    string
+	User    collections.User
 	Message []string
 }
 
 func main() {
 	ConfigureApp()
+
 	ChannelTest()
 }
 
 func ChannelTest() {
-	num, err := utils.GenerateUserDefinedRandomNumber(14, 66)
+	num, err := utils.GenerateUserDefinedRandomNumber(6, 28)
 
 	if err != nil {
 		errorLog.Println(err.Error())
@@ -47,15 +49,15 @@ func Send(num int) {
 
 	for i := 1; i < num; i++ {
 		var message Message
-		message.Name = utils.GenerateName(16)
-		message.UUID = utils.GenerateUID()
+		message.User.FirstName = utils.GenerateName(16)
+		message.User.UID = utils.GenerateUID()
 		words := []string{}
 
 		for j := 1; j <= 11; j++ {
 			if j%2 == 0 {
-				words = append(words, utils.GenerateWord(i-j))
+				words = append(words, utils.GenerateWord(10-i))
 			} else {
-				words = append(words, utils.GenerateWord(j/(2+i)))
+				words = append(words, utils.GenerateWord(12-j))
 			}
 		}
 
@@ -63,13 +65,22 @@ func Send(num int) {
 		MsgChan <- message
 		time.Sleep(time.Microsecond * 138789)
 	}
+	close(MsgChan)
 }
 
 func Receive() {
 	for {
 		message := <-MsgChan
-		fmt.Printf("%v\n\n", message)
+		if len(message.Message) == 0 {
+			break
+		} else {
+			fmt.Println("First Name:\t", message.User.FirstName)
+			fmt.Println("UID:\t        ", message.User.UID)
+			fmt.Println("Message:\t", message.Message)
+			fmt.Printf("\n\n")
+		}
 	}
+	utils.ExitProg(0)
 }
 
 func SetupLogs() {
