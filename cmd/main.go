@@ -47,9 +47,10 @@ func ChannelTest() {
 func Send(num int) {
 	fmt.Printf("Random Number:\t%d\n\n", num)
 
-	for i := 1; i < num; i++ {
+	for i := 1; i <= num; i++ {
 		var message Message
-		message.User.FirstName = utils.GenerateName(16)
+		message.User.FirstName = utils.GenerateName(7)
+		message.User.LastName = utils.GenerateName(10)
 		message.User.UID = utils.GenerateUID()
 		words := []string{}
 
@@ -75,6 +76,7 @@ func Receive() {
 			break
 		} else {
 			fmt.Println("First Name:\t", message.User.FirstName)
+			fmt.Println("Last Name:\t", message.User.LastName)
 			fmt.Println("UID:\t        ", message.User.UID)
 			fmt.Println("Message:\t", message.Message)
 			fmt.Printf("\n\n")
