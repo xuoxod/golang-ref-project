@@ -44,8 +44,8 @@ func ChannelTest() {
 }
 
 func Send(num int) {
-	fmt.Printf("Random Number:\t%d\n\n", num)
-
+	fmt.Printf("Random Number:\t%d\n", num)
+	log.Printf("Started sending data to %T\n\n", MsgChan)
 	for i := 1; i <= num; i++ {
 		var message Message
 		message.User.FirstName = utils.GenerateName(7)
@@ -81,8 +81,8 @@ func Send(num int) {
 
 func Receive() {
 	for {
-		message := <-MsgChan
-		if len(message.Message) == 0 {
+		message, ok := <-MsgChan
+		if !ok {
 			break
 		} else {
 			fmt.Println("First Name:\t", message.User.FirstName)
@@ -93,6 +93,7 @@ func Receive() {
 			fmt.Printf("\n\n")
 		}
 	}
+	log.Printf("\nFinished receiving data from %T\n", MsgChan)
 	utils.ExitProg(0)
 }
 
