@@ -56,8 +56,10 @@ func Send(num int) {
 
 		for j := 1; j <= 11; j++ {
 			if j%2 == 0 {
+				message.User.ContactDetails.Email = fmt.Sprintf("%s@email.net", utils.GenerateName(7))
 				words = append(words, utils.GenerateWord(10-i))
 			} else {
+				message.User.ContactDetails.Email = fmt.Sprintf("%s@oculus.org", utils.GenerateName(4))
 				words = append(words, utils.GenerateWord(12-j))
 			}
 		}
@@ -77,6 +79,7 @@ func Receive() {
 		} else {
 			fmt.Println("First Name:\t", message.User.FirstName)
 			fmt.Println("Last Name:\t", message.User.LastName)
+			fmt.Println("Email:\t        ", message.User.ContactDetails.Email)
 			fmt.Println("UID:\t        ", message.User.UID)
 			fmt.Println("Message:\t", message.Message)
 			fmt.Printf("\n\n")
