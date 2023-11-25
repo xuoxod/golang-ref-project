@@ -15,31 +15,33 @@ func TestUser(t *testing.T) {
 	var fnamePointer *string = &fname
 	var lnamePointer *string = &lname
 
-	user := User{
+	var user Details = User{
 		UID:       *uidPointer,
 		FirstName: *fnamePointer,
 		LastName:  *lnamePointer,
 	}
 
-	got := user.UID
+	got := user.UserInfo()["uid"]
 	want := uid
 
 	if got != want {
 		t.Fatalf("%T: %s is not equal to %T: %s\n", got, got, want, want)
 	}
 
-	got = user.FirstName
+	got = user.UserInfo()["fname"]
 	want = fname
 
 	if got != want {
 		t.Fatalf("%T: %s is not equal to %T: %s\n", got, got, want, want)
 	}
 
-	got = user.LastName
+	got = user.UserInfo()["lname"]
 	want = lname
 
 	if got != want {
 		t.Fatalf("%T: %s is not equal to %T: %s\n", got, got, want, want)
 	}
+
+	user.Info()
 
 }

@@ -1,11 +1,10 @@
 package collections
 
-import (
-	"encoding/json"
-)
+import "fmt"
 
 type Details interface {
-	UserInfo() (string, error)
+	UserInfo() map[string]interface{}
+	Info()
 }
 
 type Contact struct {
@@ -24,12 +23,28 @@ type Accounts struct {
 	Users []User `json:"users"`
 }
 
-func (u User) Details() (string, error) {
-	response, err := json.Marshal(u)
+func (u User) UserInfo() map[string]interface{} {
+	info := make(map[string]interface{})
+	info["uid"] = u.UID
+	info["fname"] = u.FirstName
+	info["lname"] = u.LastName
+	info["contact"] = u.ContactDetails
+	return info
+}
 
-	if err != nil {
-		return "", err
+func (u User) Info() {
+	fmt.Println("UID: ", u.UID)
+	fmt.Println("First Name: ", u.FirstName)
+	fmt.Println("Last Name: ", u.LastName)
+
+	email := u.ContactDetails.Email
+	phone := u.ContactDetails.Phone
+
+	if email != "" {
+		fmt.Println("Last Name: ", email)
 	}
 
-	return string(response), nil
+	if phone != "" {
+		fmt.Println("Last Name: ", phone)
+	}
 }
