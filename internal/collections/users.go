@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 )
 
+type Details interface {
+	UserInfo() (string, error)
+}
+
 type Contact struct {
 	Email string `json:"email"`
 	Phone string `json:"phone"`
@@ -20,7 +24,7 @@ type Accounts struct {
 	Users []User `json:"users"`
 }
 
-func (u User) UserInfo() (string, error) {
+func (u User) Details() (string, error) {
 	response, err := json.Marshal(u)
 
 	if err != nil {
