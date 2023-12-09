@@ -40,7 +40,7 @@ func main() {
 		return
 	}
 
-	time.Sleep(time.Second * 12)
+	time.Sleep(time.Second * 2)
 
 	fmt.Printf("\nValidating the token\n")
 
