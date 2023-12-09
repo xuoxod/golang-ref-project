@@ -5,7 +5,7 @@ import (
 	"github.com/xuoxod/lab/internal/constants"
 )
 
-func ValidateJwt(tokenString string) (*jwt.Token, bool, error) {
+func ValidateToken(tokenString string) (*jwt.Token, bool, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(constants.SecretKey), nil
 	})

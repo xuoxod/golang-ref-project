@@ -11,7 +11,7 @@ import (
 
 func GenerateJwt(user interface{}) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    fmt.Sprintf("%d", user),
+		Issuer:    fmt.Sprintf("%v", user),
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	})
 
@@ -28,7 +28,7 @@ func GenerateJwtFor(user interface{}, timeFrame int) (string, error) {
 	var tf time.Duration = time.Duration(timeFrame)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    fmt.Sprintf("%d", user),
+		Issuer:    fmt.Sprintf("%v", user),
 		ExpiresAt: time.Now().Add(time.Hour * tf).Unix(),
 	})
 
