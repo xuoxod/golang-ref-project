@@ -23,3 +23,20 @@ func GenerateJwt(user interface{}) (string, error) {
 
 	return token, nil
 }
+
+func GenerateJwtAfter(user interface{}, timeFrame int) (string, error) {
+	var tf time.Duration = time.Duration(timeFrame)
+
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Issuer:    fmt.Sprintf("%d", user),
+		ExpiresAt: time.Now().Add(time.Hour * tf).Unix(),
+	})
+
+	token, err := claims.SignedString([]byte(constants.SecretKey))
+
+	if err != nil {
+		return "", errors.New("Unabled to generate token")
+	}
+
+	return token, nil
+}
