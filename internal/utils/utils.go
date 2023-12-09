@@ -81,6 +81,8 @@ func DTS() string {
 		suffix = "nd"
 	} else if strings.HasSuffix(strDay, "3") {
 		suffix = "rd"
+	} else if strings.HasSuffix(strDay, "11") || strings.HasSuffix(strDay, "12") || strings.HasSuffix(strDay, "13") {
+		suffix = "th"
 	} else {
 		suffix = "th"
 	}
@@ -112,8 +114,34 @@ func TS() string {
 	return fmt.Sprintf("%v:%v:%v", hour, minute, second)
 }
 
-func Print(msg string) {
-	fmt.Println(msg)
+func Print[T any | int64](msg ...T) {
+	line := ""
+
+	for i, l := range msg {
+		if (i - 1) < len(msg) {
+			line += fmt.Sprintf("%v ", l)
+		} else {
+
+			line += fmt.Sprintf("%v", l)
+		}
+	}
+
+	fmt.Println(line)
+}
+
+func Printf[T any | int64](msg ...T) {
+	line := ""
+
+	for i, l := range msg {
+		if (i - 1) < len(msg) {
+			line += fmt.Sprintf("%v ", l)
+		} else {
+
+			line += fmt.Sprintf("%v", l)
+		}
+	}
+
+	fmt.Printf("%v", line)
 }
 
 func GenerateMinMaxRandomNumber() (int, error) {
@@ -173,6 +201,21 @@ func GenerateWord(size int) string {
 	}
 
 	name, err := gonanoid.Generate("aeiouylmqrsvAEIOUYBCDNP", size)
+
+	if err != nil {
+		log.Println(err.Error())
+		return ""
+	}
+
+	return name
+}
+
+func GenerateRandomString(size int) string {
+	if size < 1 {
+		size = 13
+	}
+
+	name, err := gonanoid.Generate("abcdefghijklmopqrstuvwxyzACDEFGHIJKLMOPQRSTUVWXYZ~!@#$%^&*,.?>}]|", size)
 
 	if err != nil {
 		log.Println(err.Error())
