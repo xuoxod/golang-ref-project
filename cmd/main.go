@@ -44,7 +44,7 @@ func main() {
 
 	fmt.Printf("\nValidating the token\n")
 
-	token, isValid, err := utils.ValidateToken(tokenString)
+	token, isValid, err := utils.ValidateJwt(tokenString)
 
 	if isValid {
 		claims := token.Claims.(*jwt.StandardClaims)
