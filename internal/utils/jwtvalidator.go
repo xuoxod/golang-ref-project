@@ -15,5 +15,4 @@ func ValidateToken(tokenString string) (*jwt.Token, bool, error) {
 	}
 
 	return token, token.Valid, nil
-
 }
