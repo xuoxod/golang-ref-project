@@ -2,10 +2,8 @@ package main
 
 import (
 	_ "embed"
-	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/xuoxod/lab/internal/config"
 	"github.com/xuoxod/lab/internal/envloader"
@@ -20,14 +18,6 @@ var errorLog *log.Logger
 func main() {
 	ConfigureApp()
 	utils.ClearScreen()
-	// utils.Print(utils.GenerateRandomString(17))
-	currentTime := time.Now().Add(time.Hour * 24).Unix()
-	// strCurrentTime := fmt.Sprintf("%dµs", currentTime)
-	durationHours := time.Duration.Hours(time.Duration(currentTime))
-
-	fmt.Println("Current Time:\t", currentTime)
-	fmt.Printf("Type:\t%T\n", currentTime)
-	fmt.Println("Duration Hours:\t", durationHours)
 
 }
 
